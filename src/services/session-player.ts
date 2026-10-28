@@ -552,7 +552,7 @@ export default class SessionPlayer {
     } else if (action === 'resume' && player.status === STATUS.PAUSED && player.getCurrent()) {
       await player.play();
     } else if (action === 'stop') {
-      player.stop();
+      await player.stop();
     } else if (action === 'shuffle') {
       player.shuffle();
     } else if (action === 'backward' || action === 'forward') {

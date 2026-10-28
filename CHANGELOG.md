@@ -29,6 +29,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add a private `/help` command with command examples. Explain that favorites save named searches or URLs for the server, and that the queue-empty delay uses seconds with 0 disabling the timeout.
 - Fix fresh Node.js installs with compatible pagination and Node type dependencies.
 
+- Reply in the Discord language of the user who ran a command, and use the server's language for messages Muse sends on its own. Anything without a translation uses the original English (Midwestern) text.
+- Add a Spanish translation (also used for Latin American Spanish) and an English (Southern) personality pack.
+- Translate slash command names and descriptions in the `/` menu, and show them in `/help`. Commands still work the same way whatever language you use.
+- Add `BOT_LOCALE` to use one language pack for everyone, for example `BOT_LOCALE=en-US-x-southern`.
+- Load custom language packs from `data/locales/` after a restart, and add `yarn locale:template <code>` to create one with every English line. Mistakes in a pack log a warning and fall back to English instead of stopping Muse.
+- Never ping `@everyone`, `@here` or roles from bot messages, even when a song title or language pack contains them.
+- Copy language packs into `dist/` as part of `yarn build`.
+
 ## [2.11.8] - 2026-09-20
 
 - Retry stalled initial voice handshakes within a bounded wait, share concurrent joins, and report the failed network phase without exposing voice credentials.

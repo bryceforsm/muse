@@ -50,6 +50,7 @@ const makeInteraction = () => {
 
   return {
     guild: {id: GUILD_ID},
+    locale: 'en-US',
     member: {user: {id: 'requester-id'}},
     channel: {id: 'text-channel-id'},
     deferReply: vi.fn().mockResolvedValue(undefined),
@@ -193,6 +194,7 @@ describe('AddQueryToQueue skip semantics', () => {
     const connect = vi.spyOn(player, 'connect').mockImplementation(async () => {
       player.voiceConnection = {state: {status: 'ready'}} as never;
     });
+    const playIntro = vi.spyOn(player, 'playIntro');
     const play = vi.spyOn(player, 'play').mockResolvedValue(undefined);
     const forward = vi.spyOn(player, 'forward');
     const {service, attachToReply} = makeService({player});
@@ -203,6 +205,7 @@ describe('AddQueryToQueue skip semantics', () => {
     expect(player.getCurrent()?.title).toBe('New song');
     expect(connect).toHaveBeenCalledOnce();
     expect(play).toHaveBeenCalledOnce();
+    expect(playIntro.mock.invocationCallOrder[0]).toBeLessThan(play.mock.invocationCallOrder[0]);
     expect(forward).not.toHaveBeenCalled();
     expect(attachToReply).toHaveBeenCalledWith(player, interaction.channel, expect.any(Promise));
     expect(replyContent(interaction)).toBe('u betcha, **New song** added to the front of the queue');
