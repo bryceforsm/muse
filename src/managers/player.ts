@@ -37,6 +37,8 @@ export default class {
           soundClips: {
             intro: this.config.INTRO_SOUND || undefined,
             outro: this.config.OUTRO_SOUND || undefined,
+            introVolume: this.config.INTRO_SOUND_VOLUME,
+            outroVolume: this.config.OUTRO_SOUND_VOLUME,
           },
         },
         this.sessionHistoryStore ? new ListeningSession(guildId, this.sessionHistoryStore) : undefined,
