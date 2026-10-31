@@ -63,6 +63,35 @@ describe('Config intro and outro sounds', () => {
     expect(config.OUTRO_SOUND).toBe(config.INTRO_SOUND);
   });
 
+  it.each([
+    ['', 'join'],
+    ['join', 'join'],
+    ['queue-start', 'queue-start'],
+    [' Queue-Start ', 'queue-start'],
+  ])('reads INTRO_SOUND_TRIGGER=%j as %s', async (trigger, expected) => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.stubEnv('INTRO_SOUND', '');
+    vi.stubEnv('OUTRO_SOUND', '');
+    vi.stubEnv('INTRO_SOUND_TRIGGER', trigger);
+    const Config = await loadConfig('2GB');
+
+    expect(new Config().INTRO_SOUND_TRIGGER).toBe(expected);
+    expect(consoleError).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
+  it('logs an invalid INTRO_SOUND_TRIGGER and only plays the intro on join', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.stubEnv('INTRO_SOUND', '');
+    vi.stubEnv('OUTRO_SOUND', '');
+    vi.stubEnv('INTRO_SOUND_TRIGGER', 'always');
+    const Config = await loadConfig('2GB');
+
+    expect(new Config().INTRO_SOUND_TRIGGER).toBe('join');
+    expect(consoleError.mock.calls[0][0]).toMatch(/INTRO_SOUND_TRIGGER: "always" must be one of join, queue-start/);
+    consoleError.mockRestore();
+  });
+
   it('only offers outro-only clips as outros', async () => {
     const {getBundledSoundNames} = await import('../src/services/config.js');
 

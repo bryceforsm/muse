@@ -20,6 +20,11 @@ const firstNonEmpty = (...values: Array<string | undefined>) => values
 const DEFAULT_SOUND_VOLUME = 100;
 const MAX_SOUND_VOLUME = 200;
 
+// When the intro plays: only on joining voice, or also when /play restarts a finished queue.
+const INTRO_SOUND_TRIGGERS = ['join', 'queue-start'] as const;
+export type IntroSoundTrigger = typeof INTRO_SOUND_TRIGGERS[number];
+const DEFAULT_INTRO_SOUND_TRIGGER: IntroSoundTrigger = 'join';
+
 const CONFIG_MAP = {
   DISCORD_TOKEN: firstNonEmpty(process.env.DISCORD_TOKEN),
   YOUTUBE_API_KEY: firstNonEmpty(process.env.YOUTUBE_API_KEY),
@@ -43,6 +48,7 @@ const CONFIG_MAP = {
   YT_DLP_AUTO_UPDATE: process.env.YT_DLP_AUTO_UPDATE === 'true',
   INTRO_SOUND: process.env.INTRO_SOUND ?? '',
   OUTRO_SOUND: process.env.OUTRO_SOUND ?? '',
+  INTRO_SOUND_TRIGGER: process.env.INTRO_SOUND_TRIGGER ?? '',
   // An empty value means the default rather than Number('') === 0, which would silence the clip.
   INTRO_SOUND_VOLUME: process.env.INTRO_SOUND_VOLUME?.trim() ? Number(process.env.INTRO_SOUND_VOLUME) : DEFAULT_SOUND_VOLUME,
   OUTRO_SOUND_VOLUME: process.env.OUTRO_SOUND_VOLUME?.trim() ? Number(process.env.OUTRO_SOUND_VOLUME) : DEFAULT_SOUND_VOLUME,
@@ -115,6 +121,21 @@ const resolveSoundVolume = (key: string, value: number): number => {
   return value;
 };
 
+/** Like a bad volume, a bad trigger shouldn't stop startup. */
+const resolveIntroSoundTrigger = (value: string): IntroSoundTrigger => {
+  const trigger = value.toLowerCase();
+  if (trigger === '') {
+    return DEFAULT_INTRO_SOUND_TRIGGER;
+  }
+
+  const match = INTRO_SOUND_TRIGGERS.find(candidate => candidate === trigger);
+  if (!match) {
+    console.error(`Ignoring INTRO_SOUND_TRIGGER: "${value}" must be one of ${INTRO_SOUND_TRIGGERS.join(', ')}. Using ${DEFAULT_INTRO_SOUND_TRIGGER}.`);
+  }
+
+  return match ?? DEFAULT_INTRO_SOUND_TRIGGER;
+};
+
 const BOT_ACTIVITY_TYPE_MAP = {
   PLAYING: ActivityType.Playing,
   LISTENING: ActivityType.Listening,
@@ -145,6 +166,7 @@ export default class Config {
   // Absolute paths to the selected clips, or '' when disabled.
   readonly INTRO_SOUND!: string;
   readonly OUTRO_SOUND!: string;
+  readonly INTRO_SOUND_TRIGGER!: IntroSoundTrigger;
   readonly INTRO_SOUND_VOLUME!: number;
   readonly OUTRO_SOUND_VOLUME!: number;
 
@@ -183,6 +205,11 @@ export default class Config {
       } else if (typeof value === 'string') {
         if (key === 'INTRO_SOUND' || key === 'OUTRO_SOUND') {
           this[key] = resolveSoundClip(key, key === 'INTRO_SOUND' ? 'intro' : 'outro', value.trim());
+          continue;
+        }
+
+        if (key === 'INTRO_SOUND_TRIGGER') {
+          this[key] = resolveIntroSoundTrigger(value.trim());
           continue;
         }
 

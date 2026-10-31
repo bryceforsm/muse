@@ -225,10 +225,9 @@ is visible only to you.
 
 ### Intro and outro jingles
 
-Muse can play a short jingle when `/play` starts music from silence (joining
-voice, or after the queue has finished) and another before it leaves voice via
-`/stop`, `/disconnect`, or the idle timeout. Both are off by default. Set either
-one in your `.env` file to a bundled jingle name:
+Muse can play a short jingle when `/play` makes it join voice and another before
+it leaves voice via `/stop`, `/disconnect`, or the idle timeout. Both are off by
+default. Set either one in your `.env` file to a bundled jingle name:
 
 | Variable | Bundled options |
 | --- | --- |
@@ -254,6 +253,10 @@ or `OUTRO_SOUND_VOLUME` to a percentage of the current playback volume, from
 server's default volume. For example, `INTRO_SOUND_VOLUME=50` plays the intro
 at half the music's volume, and `OUTRO_SOUND_VOLUME=150` boosts a quiet outro.
 An invalid value logs an error and uses `100`.
+
+To also play the intro when `/play` restarts a finished queue while Muse is still
+in voice, set `INTRO_SOUND_TRIGGER=queue-start`. The default, `join`, only plays
+it when Muse joins voice. An invalid value logs an error and uses `join`.
 
 ### Cache
 

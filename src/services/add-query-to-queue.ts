@@ -125,7 +125,10 @@ export default class AddQueryToQueue {
       }
     } else if (player.status === STATUS.IDLE) {
       // Player is idle, start playback instead
-      await player.playIntro();
+      if (this.config.INTRO_SOUND_TRIGGER === 'queue-start') {
+        await player.playIntro();
+      }
+
       await player.play();
     }
 
