@@ -227,8 +227,8 @@ is visible only to you.
 
 Muse can play a short jingle when `/play` starts music from silence (joining
 voice, or after the queue has finished) and another before it leaves voice via
-`/stop`, `/disconnect`, the ⏹ reaction, or the idle timeout. Both are off by
-default. Set either one in your `.env` file to a bundled jingle name:
+`/stop`, `/disconnect`, or the idle timeout. Both are off by default. Set either
+one in your `.env` file to a bundled jingle name:
 
 | Variable | Bundled options |
 | --- | --- |
