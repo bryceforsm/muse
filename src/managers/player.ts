@@ -40,8 +40,8 @@ export default class {
             introVolume: this.config.INTRO_SOUND_VOLUME,
             outroVolume: this.config.OUTRO_SOUND_VOLUME,
           },
+          listeningSession: this.sessionHistoryStore ? new ListeningSession(guildId, this.sessionHistoryStore) : undefined,
         },
-        this.sessionHistoryStore ? new ListeningSession(guildId, this.sessionHistoryStore) : undefined,
       );
 
       this.guildPlayers.set(guildId, player);

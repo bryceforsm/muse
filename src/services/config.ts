@@ -105,6 +105,16 @@ const resolveSoundClip = (key: string, slot: SoundSlot, value: string): string =
   return soundPath;
 };
 
+/** Like a missing clip, a bad volume shouldn't stop startup. */
+const resolveSoundVolume = (key: string, value: number): number => {
+  if (!Number.isFinite(value) || value < 0 || value > MAX_SOUND_VOLUME) {
+    console.error(`Ignoring ${key}: "${process.env[key] ?? ''}" must be a number from 0 to ${MAX_SOUND_VOLUME}. Using ${DEFAULT_SOUND_VOLUME}.`);
+    return DEFAULT_SOUND_VOLUME;
+  }
+
+  return value;
+};
+
 const BOT_ACTIVITY_TYPE_MAP = {
   PLAYING: ActivityType.Playing,
   LISTENING: ActivityType.Listening,
@@ -152,14 +162,7 @@ export default class Config {
 
       if (typeof value === 'number') {
         if (key === 'INTRO_SOUND_VOLUME' || key === 'OUTRO_SOUND_VOLUME') {
-          // Like a missing clip, a bad volume shouldn't stop startup.
-          if (!Number.isFinite(value) || value < 0 || value > MAX_SOUND_VOLUME) {
-            console.error(`Ignoring ${key}: "${process.env[key] ?? ''}" must be a number from 0 to ${MAX_SOUND_VOLUME}. Using ${DEFAULT_SOUND_VOLUME}.`);
-            this[key] = DEFAULT_SOUND_VOLUME;
-          } else {
-            this[key] = value;
-          }
-
+          this[key] = resolveSoundVolume(key, value);
           continue;
         }
 

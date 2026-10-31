@@ -131,6 +131,7 @@ export default class {
   public guildId: string;
   public loopCurrentSong = false;
   public loopCurrentQueue = false;
+  public readonly listeningSession?: ListeningSession;
   private currentChannel: VoiceChannel | undefined;
   private voiceConnectionGeneration = 0;
   private pendingConnection?: {channelId: string; promise: Promise<void>};
@@ -173,10 +174,11 @@ export default class {
     {
       playingMessageUpdateIntervalSeconds = DEFAULT_PLAYING_MESSAGE_UPDATE_INTERVAL_SECONDS,
       soundClips = {},
-    }: {playingMessageUpdateIntervalSeconds?: number; soundClips?: SoundClips} = {},
-    public readonly listeningSession?: ListeningSession,
+      listeningSession,
+    }: {playingMessageUpdateIntervalSeconds?: number; soundClips?: SoundClips; listeningSession?: ListeningSession} = {},
   ) {
     this.soundClips = soundClips;
+    this.listeningSession = listeningSession;
     this.fileCache = fileCache;
     this.guildId = guildId;
     this.ageRestrictedFallbackResolver = ageRestrictedFallbackResolver;
